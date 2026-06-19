@@ -2,6 +2,8 @@ import { getArticleBySlug, getPublishedArticles } from "@/lib/data";
 import { notFound } from "next/navigation";
 import ArticleCard from "@/components/ArticleCard";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
