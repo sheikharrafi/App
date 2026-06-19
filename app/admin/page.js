@@ -1,8 +1,15 @@
 import { createSupabaseServerClient } from "@/lib/supabase-admin";
 import DashboardClient from "@/components/admin/DashboardClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
   const supabase = await createSupabaseServerClient();
+
+  if (!supabase) {
+    const stats = { totalArticles: 0, publishedArticles: 0, draftArticles: 0, totalCategories: 0, totalSubscribers: 0 };
+    return <DashboardClient stats={stats} recentArticles={[]} />;
+  }
 
   // Fetch stats
   const [

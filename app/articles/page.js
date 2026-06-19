@@ -1,6 +1,8 @@
 import { getPublishedArticles, getCategories } from "@/lib/data";
 import ArticlesPageClient from "@/components/ArticlesPageClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Articles - Curious Mind",
   description: "Browse all articles",

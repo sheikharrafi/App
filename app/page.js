@@ -4,6 +4,8 @@ import FeaturedArticles from "@/components/FeaturedArticles";
 import CategoryBrowser from "@/components/CategoryBrowser";
 import Newsletter from "@/components/Newsletter";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const [articles, categories, sections, pageData] = await Promise.all([
     getPublishedArticles(),

@@ -1,5 +1,7 @@
 import { getPageContent } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata() {
   const page = await getPageContent("contact");
   return {
