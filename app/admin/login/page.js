@@ -7,59 +7,49 @@ import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  // Check if already logged in or if hash contains access_token
   useEffect(() => {
-    const checkAuth = async () => {
-      if (!supabaseBrowser) {
-        setChecking(false);
-        return;
-      }
+    if (!supabaseBrowser) return;
 
-      // If URL has access_token in hash, Supabase will handle it
-      if (window.location.hash && window.location.hash.includes("access_token")) {
-        // Supabase client auto-detects hash tokens
-        const { data: { session }, error } = await supabaseBrowser.auth.getSession();
-        
-        if (session) {
+    // Listen for auth state changes (handles hash token)
+    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_IN" && session) {
           // Auto-add as admin if first user
-          const { data: existingAdmins } = await supabaseBrowser
-            .from("admin_users")
-            .select("id")
-            .limit(1);
+          try {
+            const { data: existingAdmins } = await supabaseBrowser
+              .from("admin_users")
+              .select("id")
+              .limit(1);
 
-          if (!existingAdmins || existingAdmins.length === 0) {
-            const { data: { user } } = await supabaseBrowser.auth.getUser();
-            if (user) {
+            if (!existingAdmins || existingAdmins.length === 0) {
               await supabaseBrowser.from("admin_users").insert({
-                user_id: user.id,
-                email: user.email,
-                display_name: user.user_metadata?.full_name || user.email,
-                avatar_url: user.user_metadata?.avatar_url || null,
+                user_id: session.user.id,
+                email: session.user.email,
+                display_name: session.user.user_metadata?.full_name || session.user.email,
+                avatar_url: session.user.user_metadata?.avatar_url || null,
                 role: "admin",
               });
             }
+          } catch (e) {
+            console.error("Admin registration error:", e);
           }
 
           router.push("/admin");
-          return;
         }
       }
+    );
 
-      // Check existing session
-      const { data: { session } } = await supabaseBrowser.auth.getSession();
+    // Check if already logged in
+    supabaseBrowser.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         router.push("/admin");
-        return;
       }
+    });
 
-      setChecking(false);
-    };
-
-    checkAuth();
+    return () => subscription.unsubscribe();
   }, [router]);
 
   const handleGoogleLogin = async () => {
@@ -84,18 +74,9 @@ export default function AdminLoginPage() {
     }
   };
 
-  if (checking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0F0F2E]">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0F0F2E]">
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
-        {/* Logo / Title */}
         <div className="mb-8 text-center">
           <div className="mb-4 text-4xl">🧠</div>
           <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
@@ -104,14 +85,12 @@ export default function AdminLoginPage() {
           </p>
         </div>
 
-        {/* Error message */}
         {error && (
           <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-center text-sm text-red-400">
             {error}
           </div>
         )}
 
-        {/* Google Login Button */}
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
@@ -127,7 +106,6 @@ export default function AdminLoginPage() {
           )}
         </button>
 
-        {/* Info text */}
         <p className="mt-6 text-center text-xs text-slate-500">
           Only authorized admins can access this panel.
           <br />

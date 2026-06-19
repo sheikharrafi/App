@@ -1,65 +1,10 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse } from "next/server";
+// Middleware disabled - auth handled client-side
+// This prevents redirect loops between middleware and client auth state
 
-export async function middleware(request) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  // If Supabase not configured, allow all requests
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return NextResponse.next();
-  }
-
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
-
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) =>
-          request.cookies.set(name, value)
-        );
-        supabaseResponse = NextResponse.next({
-          request,
-        });
-        cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
-        );
-      },
-    },
-  });
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Protect admin routes
-  if (request.nextUrl.pathname.startsWith("/admin")) {
-    // Allow login page without auth
-    if (request.nextUrl.pathname === "/admin/login") {
-      if (user) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/admin";
-        return NextResponse.redirect(url);
-      }
-      return supabaseResponse;
-    }
-
-    // All other admin routes require auth
-    if (!user) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/admin/login";
-      return NextResponse.redirect(url);
-    }
-  }
-
-  return supabaseResponse;
+export function middleware() {
+  // No-op - allow all requests
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [],
 };
