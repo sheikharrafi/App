@@ -1,13 +1,33 @@
+"use client";
+
+import { motion } from "framer-motion";
 import ArticleCard from "./ArticleCard";
 
-export default function FeaturedArticles({ articles }) {
+export default function FeaturedArticles({ articles, heading }) {
+  if (!articles || articles.length === 0) return null;
+
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-20 md:px-8">
-      <h2 className="text-3xl font-bold text-white">Latest from the Lab</h2>
-      <p className="mt-2 text-slate-300">New ideas, breakthroughs, and thought experiments.</p>
-      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {articles.map((article) => (
-          <ArticleCard key={article.slug} article={article} />
+    <section className="mx-auto max-w-7xl px-4 py-16 md:px-8">
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-3xl font-bold text-[var(--color-text)]"
+      >
+        {heading || "Latest Articles"}
+      </motion.h2>
+
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {articles.map((article, i) => (
+          <motion.div
+            key={article.id}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.1 }}
+          >
+            <ArticleCard article={article} />
+          </motion.div>
         ))}
       </div>
     </section>
