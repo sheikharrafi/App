@@ -1,47 +1,39 @@
+import { getCategories } from "@/lib/data";
 import Link from "next/link";
-import { getAllArticles } from "@/lib/articles";
 
 export const metadata = {
-  title: "Categories",
-  description: "Explore all categories and related articles.",
+  title: "Categories - Curious Mind",
+  description: "Browse articles by category",
 };
 
-export default function CategoriesPage({ searchParams }) {
-  const params = searchParams || {};
-  const selectedCategory = params.category;
-  const articles = getAllArticles();
-
-  const grouped = articles.reduce((acc, article) => {
-    if (!acc[article.category]) {
-      acc[article.category] = [];
-    }
-    acc[article.category].push(article);
-    return acc;
-  }, {});
-
-  const categoriesToRender = selectedCategory
-    ? Object.keys(grouped).filter((category) => category === selectedCategory)
-    : Object.keys(grouped);
+export default async function CategoriesPage() {
+  const categories = await getCategories();
 
   return (
-    <section className="mx-auto w-full max-w-5xl px-4 py-20 md:px-8">
-      <h1 className="text-4xl font-bold text-white">Categories</h1>
-      <div className="mt-8 space-y-8">
-        {categoriesToRender.map((category) => (
-          <div key={category} className="rounded-2xl border border-white/10 bg-[#171744] p-6">
-            <h2 className="text-2xl font-semibold text-violet-300">{category}</h2>
-            <ul className="mt-4 space-y-3">
-              {grouped[category].map((article) => (
-                <li key={article.slug}>
-                  <Link href={`/blog/${article.slug}`} className="text-slate-200 hover:text-blue-300">
-                    {article.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <div className="mx-auto max-w-7xl px-4 py-16 md:px-8">
+      <h1 className="text-4xl font-bold text-[var(--color-text)]">Categories</h1>
+      <p className="mt-2 text-[var(--color-text-muted)]">Browse articles by topic</p>
+
+      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {categories.map((cat) => (
+          <Link
+            key={cat.id}
+            href={`/articles?category=${cat.slug}`}
+            className="group rounded-2xl border border-white/10 bg-[var(--color-surface)] p-8 transition-all hover:border-[var(--color-primary)]/30 hover:shadow-lg"
+          >
+            <span className="text-4xl">{cat.icon}</span>
+            <h2 className="mt-4 text-xl font-bold text-[var(--color-text)] group-hover:text-[var(--color-primary)]">
+              {cat.name}
+            </h2>
+            <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+              {cat.description || "Explore articles in this category"}
+            </p>
+            <div className="mt-4 inline-flex items-center text-sm font-medium text-[var(--color-primary)]">
+              Browse articles →
+            </div>
+          </Link>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

@@ -1,40 +1,61 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { FiCalendar, FiClock } from "react-icons/fi";
 
 export default function ArticleCard({ article }) {
+  const categoryName = article.categories?.name || "Uncategorized";
+  const categoryColor = article.categories?.color || "var(--color-primary)";
+  const date = article.published_at
+    ? new Date(article.published_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+    : "";
+
   return (
-    <motion.article
-      whileHover={{ y: -8 }}
-      className="group overflow-hidden rounded-2xl border border-white/10 bg-[#16163d] shadow-lg"
-    >
-      <Link href={`/blog/${article.slug}`}>
-        <Image
-          src={article.image}
-          alt={article.title}
-          width={800}
-          height={480}
-          className="h-48 w-full object-cover transition duration-500 group-hover:scale-105"
-        />
-      </Link>
-      <div className="p-5">
-        <span className="rounded-full bg-violet-500/20 px-3 py-1 text-xs font-semibold text-violet-300">
-          {article.category}
-        </span>
-        <h3 className="mt-3 text-xl font-semibold text-white">{article.title}</h3>
-        <p className="mt-2 line-clamp-3 text-sm text-slate-300">{article.description}</p>
-        <div className="mt-4 flex gap-4 text-xs text-slate-400">
-          <span className="flex items-center gap-1">
-            <FiCalendar /> {article.date}
+    <Link href={`/blog/${article.slug}`} className="group block">
+      <article className="overflow-hidden rounded-2xl border border-white/10 bg-[var(--color-surface)] transition-all hover:border-[var(--color-primary)]/30 hover:shadow-lg hover:shadow-[var(--color-primary)]/5">
+        {/* Image */}
+        {article.image_url && (
+          <div className="relative h-48 overflow-hidden">
+            <img
+              src={article.image_url}
+              alt={article.title}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="p-5">
+          {/* Category badge */}
+          <span
+            className="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium"
+            style={{ backgroundColor: `${categoryColor}20`, color: categoryColor }}
+          >
+            {categoryName}
           </span>
-          <span className="flex items-center gap-1">
-            <FiClock /> {article.readTime}
-          </span>
+
+          {/* Title */}
+          <h3 className="mt-3 text-lg font-semibold text-[var(--color-text)] line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors">
+            {article.title}
+          </h3>
+
+          {/* Description */}
+          {article.description && (
+            <p className="mt-2 text-sm text-[var(--color-text-muted)] line-clamp-2">
+              {article.description}
+            </p>
+          )}
+
+          {/* Meta */}
+          <div className="mt-4 flex items-center gap-3 text-xs text-[var(--color-text-muted)]">
+            {date && <span>{date}</span>}
+            {article.read_time && (
+              <>
+                <span>•</span>
+                <span>{article.read_time}</span>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </motion.article>
+      </article>
+    </Link>
   );
 }

@@ -1,41 +1,50 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { FaAtom, FaCode, FaCalculator, FaLightbulb, FaRocket, FaSatelliteDish } from "react-icons/fa";
-import { categoryCardData } from "@/lib/constants";
+import Link from "next/link";
 
-const icons = {
-  Science: FaAtom,
-  Technology: FaCode,
-  Mathematics: FaCalculator,
-  Knowledge: FaLightbulb,
-  Innovation: FaRocket,
-  Discovery: FaSatelliteDish,
-};
+export default function CategoryBrowser({ categories, heading }) {
+  if (!categories || categories.length === 0) return null;
 
-export default function CategoryBrowser() {
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-20 md:px-8">
-      <h2 className="text-3xl font-bold text-white">Explore by Category</h2>
-      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {categoryCardData.map((category) => {
-          const Icon = icons[category.name];
-          return (
-            <motion.div key={category.name} whileHover={{ scale: 1.02 }}>
-              <Link
-                href={`/categories?category=${encodeURIComponent(category.name)}`}
-                className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#171744] p-5 transition hover:border-violet-400/40"
-              >
-                <div>
-                  <p className="text-lg font-semibold text-white">{category.name}</p>
-                  <p className="text-sm text-slate-400">{category.count} articles</p>
-                </div>
-                <Icon className="text-2xl text-violet-300" />
-              </Link>
-            </motion.div>
-          );
-        })}
+    <section className="mx-auto max-w-7xl px-4 py-16 md:px-8">
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-3xl font-bold text-[var(--color-text)]"
+      >
+        {heading || "Browse by Category"}
+      </motion.h2>
+
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {categories.map((category, i) => (
+          <motion.div
+            key={category.id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.1 }}
+          >
+            <Link
+              href={`/articles?category=${category.slug}`}
+              className="group flex items-center gap-4 rounded-xl border border-white/10 bg-[var(--color-surface)] p-5 transition-all hover:border-white/20 hover:shadow-lg"
+              style={{ "--cat-color": category.color }}
+            >
+              <span className="text-3xl">{category.icon}</span>
+              <div>
+                <h3 className="font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary)]">
+                  {category.name}
+                </h3>
+                {category.description && (
+                  <p className="mt-0.5 text-xs text-[var(--color-text-muted)] line-clamp-1">
+                    {category.description}
+                  </p>
+                )}
+              </div>
+            </Link>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
