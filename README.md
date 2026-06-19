@@ -1,21 +1,22 @@
-# Personal Blog Website - "Curious Mind" Style
+# Curious Mind Blog
 
-A modern, professional personal blogging website built with Next.js, featuring Science, Technology, Math, and Knowledge content.
+Modern personal blogging website inspired by the Curious Mind style.
 
-## Features
-- 🌙 Dark theme with cosmic design
-- ✨ Smooth animations and transitions
-- 📱 Fully responsive design
-- 🚀 Fast performance with Next.js 14
-- 📝 MDX-based blog content
-- 🎨 Beautiful UI with Tailwind CSS
-
-## Tech Stack
-- Next.js 14
-- React
+## Stack
+- Next.js (App Router)
 - Tailwind CSS
 - Framer Motion
-- MDX
+- MDX content files
+- React Icons
 
-## Getting Started
-More details coming soon...
+## Run locally
+```bash
+npm install
+npm run dev
+```
+
+## Build
+```bash
+npm run lint
+npm run build
+```
