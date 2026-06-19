@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ThemeProvider } from "@/components/ThemeProvider";
+import ThemeProvider from "@/components/ThemeProvider";
 import { getSiteSettings, getThemeSettings, getNavigation, getFooterData } from "@/lib/data";
 import DynamicTheme from "@/components/DynamicTheme";
 
@@ -31,7 +31,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme={theme?.dark_mode_default ? "dark" : "light"}>
+        <ThemeProvider>
           <DynamicTheme theme={theme} />
           <Navbar settings={settings} navItems={navItems} />
           <main className="min-h-screen">
